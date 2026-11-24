@@ -4,7 +4,7 @@ Rheinmetall Control App is the official companion app for the Rheinmetall contro
 
 ## Downloads
 * **Android App (APK):** [Download Latest Release](https://github.com/danieladven0772-lgtm/Rheinmetal-Control-Board-App/releases/latest)
-* **3D Enclosure / Case Files:** [Download on Printables](https://www.printables.com/model/1903467-board-decoy-pd-trigger-5-15v-bp-v1)
+* **3D File Board:** [Download on Printables](https://www.printables.com/model/1903467-board-decoy-pd-trigger-5-15v-bp-v1)
 
 ---
 
