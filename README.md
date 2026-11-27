@@ -23,22 +23,27 @@
 | **Supported Hardware** | Rheinmetall Control Board (`Rheinmetall RHV1`) |
 | **Power Input** | USB Power Delivery (PD), **5–15V 3A** |
 | **Output Voltage Levels** | Quiet (**5V**), Balanced (**9V**), Fast (**12V**), Boost (**15V**) |
-| **Peltier Output** | Dedicated high-current output pad (rated up to USB PD supply) |
-| **PWM (Fan) Output Limit** | **< 1A max** (never exceed 1A) |
-| **Recommended PWM Frequency** | **500 Hz – 5 kHz** (`0.5 – 5.0 kHz` in app) |
+| **Peltier Output** | Dedicated high-current output pad; use **127-series (`TEC1-127xx`) or higher** to safely operate up to **15V** |
+| **PWM (Fan) Output Limit** | **< 1A max** (never exceed 1A); match fan voltage rating to selected output level |
+| **Recommended PWM Frequency** | **500 Hz – 5 kHz** (`0.5 – 5.0 kHz` in app); **do not exceed 20 kHz** |
 | **RGB Output** | **5V 3-pin** addressable RGB (`5V`, `Data`, `GND`), **< 1A max**, up to **22 Active LEDs** |
 | **Wireless Interface** | Bluetooth (requires Bluetooth + GPS/Location enabled on Android) |
 
 ## Safety Warnings
 
-> **CRITICAL:** Read these precautions carefully before soldering, wiring, or powering on the board.
+> **CRITICAL:** Read these precautions carefully before soldering, wiring, or powering on the board. **Always verify the specifications of every connected component to confirm full compatibility before applying power.**
 
 * **Load Limit Warning:** **NEVER** connect a Peltier module or any heavy load exceeding **1A** to the **PWM (Fan)** or **RGB** outputs. High-current loads must only be connected to the dedicated **Peltier** output pads.
+* **Component Compatibility & Voltage Rating Warning:** Always check the voltage and current ratings of every component (Peltier, fan, RGB LED, and USB PD adapter) before wiring or increasing voltage:
+  * **Peltier Modules:** Use a **127-series (`TEC1-127xx`) or higher** Peltier module if you plan to run the board up to **Boost (15V)**. Lower-series Peltier modules rated for lower maximum voltages can overheat or fail at 15V.
+  * **Cooling Fans:** Always use a fan rated for the voltage level you intend to run. If you connect a **12V (or lower) fan** and set the board to **Boost (15V)**, the fan's internal driver IC may not withstand the overvoltage and can be **permanently damaged or burn out**.
+* **PWM Frequency Heat Warning (Do Not Exceed 20 kHz):** The higher the PWM frequency, the harder the PWM IC works, which produces more heat. Keep your frequency within the recommended **500 Hz – 5 kHz (`0.5 – 5.0 kHz`)** starting range, and **NEVER set the PWM frequency above 20 kHz (`20.0 kHz`)**, as this greatly increases the risk of board overheating. Always monitor **Board temperature** in the app.
 * **Polarity & RGB Voltage Check:** Double-check all positive (`+`) and negative (`-`) connections before applying power. Reverse polarity will permanently damage the board and connected components. The RGB output uses **5V 3-pin** LEDs only—do **not** connect 12V 4-pin RGB strips.
-* **PWM Frequency Heat Warning:** Operating the PWM output **above the recommended 500 Hz – 5 kHz (`0.5 – 5.0 kHz`) range** will generate **excessive heat** on the board. Keep your frequency within the recommended range and monitor **Board temperature** in the app.
 * **Power Off Before Wiring:** Always disconnect the USB PD cable before soldering or modifying connections, and inspect solder joints for bridges or shorts before powering on.
 * **Peltier Thermal Management:** Never power a Peltier module without a properly mounted heatsink and cooling fan on its hot side.
 * **Certified USB PD Adapter & Cable:** Use a USB PD adapter and USB-C cable rated for **5–15V 3A**. Standard 5V chargers will not trigger higher output levels (`Balanced`, `Fast`, or `Boost`).
+
+> **DISCLAIMER (DWYOR — Do With Your Own Risk):** Any application, wiring configuration, component pairing, or usage outside the specifications and recommendations in this guide is strictly at your own risk (**DWYOR**). We are **not responsible or liable** for any hardware damage, burnout, overheating, or injury resulting from improper setup, incompatible components, or use outside our recommended limits.
 
 ## Hardware Output Pads Overview
 
@@ -46,13 +51,13 @@ Solder each component to its dedicated output pads on the board:
 
 | Output Pad | Intended Component | Current Limit | Notes |
 | ----- | ----- | ----- | ----- |
-| **Peltier** | Peltier thermoelectric module / high-current load | Dedicated high-current | Verify `+` / `-` polarity; requires heatsink + fan |
-| **Fan / PWM** | Cooling fan | **Max 1A** | Controlled via Fan duty cycle (`0%–100%`) and PWM frequency |
+| **Peltier** | Peltier thermoelectric module (**127-series / `TEC1-127xx` or higher** for up to 15V) | Dedicated high-current | Verify `+` / `-` polarity and voltage rating; requires heatsink + fan |
+| **Fan / PWM** | Cooling fan (voltage-matched to output level) | **Max 1A** | Do not run 12V (or lower) fans on **Boost (15V)**; controlled via duty cycle (`0%–100%`) and PWM frequency |
 | **RGB** | **5V 3-pin** addressable RGB LED strip / ring (up to 22 LEDs) | **Max 1A** | **5V 3-pin (`5V`, `Data`, `GND`)** only; verify pin alignment before powering on |
 
 ## Quick Start Guide
 
-1. **Solder Wiring:** Disconnect power, then solder each component to its dedicated output pads (**Peltier**, **Fan/PWM**, and **5V 3-pin RGB** separately). Verify all `+` / `-` polarities and check for solder bridges.
+1. **Verify Specs & Solder Wiring:** Disconnect power, confirm every component's voltage and current specifications (including **127-series+ Peltier** and properly rated fan if using 15V), then solder each component to its dedicated output pads (**Peltier**, **Fan/PWM**, and **5V 3-pin RGB** separately). Verify all `+` / `-` polarities and check for solder bridges.
 2. **Install the App:** Download and install the `.apk` file on your Android device from the [GitHub Releases page](https://github.com/danieladven0772-lgtm/Rheinmetal-Control-Board-App/releases/latest). If prompted, enable **Install unknown apps** for your browser or file manager.
 3. **Power On the Board:** Connect the board using a **USB Power Delivery (PD)** compatible adapter and cable rated for **5–15V 3A**.
 4. **Enable Phone Permissions:** Turn on both **Bluetooth** and **GPS / Location Services** on your smartphone (required by Android for Bluetooth scanning), and allow **Nearby Devices** permission if prompted.
@@ -74,8 +79,10 @@ Select one of four USB PD output voltage presets depending on your cooling and n
 | ----- | ----- | ----- |
 | **Quiet** | **5V** | Low power, minimal heat, quietest operation / standby cooling |
 | **Balanced** | **9V** | Everyday cooling with a good balance of performance and thermal output |
-| **Fast** | **12V** | Strong active cooling for heavier workloads |
-| **Boost** | **15V** | Maximum cooling performance (requires a 15V-capable USB PD 3A charger; monitor board temperature) |
+| **Fast** | **12V** | Strong active cooling for heavier workloads (safe upper limit for standard 12V fans) |
+| **Boost** | **15V** | Maximum cooling performance (requires a 15V-capable USB PD 3A charger, a **127-series or higher Peltier**, and a **15V-compatible fan**; monitor board temperature) |
+
+> **COMPONENT VOLTAGE NOTICE:** Always check your component specifications before switching to **Boost (15V)**. Use a **127-series (`TEC1-127xx`) or higher** Peltier module and a fan rated to handle 15V. Running a **12V or lower fan** on **Boost (15V)** risks damaging or burning out the fan's internal driver IC.
 
 ### 3. Fan Controls (PWM Frequency & Duty Cycle)
 
@@ -83,10 +90,10 @@ Tap **Fan controls** on the main screen to open the PWM tuning panel.
 
 #### What Are PWM Frequency and Duty Cycle?
 
-* **PWM Frequency (`kHz`):** How many times per second the board rapidly switches power to the fan on and off. Frequency affects motor smoothness, startup behavior, and whether the fan makes an audible whining/buzzing sound.
+* **PWM Frequency (`kHz`):** How many times per second the board rapidly switches power to the fan on and off. Frequency affects motor smoothness, startup behavior, and whether the fan makes an audible whining/buzzing sound. **Note:** Higher PWM frequencies increase the workload on the PWM IC, causing it to generate more heat.
 * **Fan Duty Cycle (`0% – 100%`):** The percentage of time power stays "on" during each cycle. A higher duty cycle spins the fan faster; a lower duty cycle slows it down (`0%` = off, `100%` = full speed).
 
-> **HEAT DISCLAIMER:** Use **500 Hz – 5 kHz (`0.5 – 5.0 kHz` in the app's `kHz` field)** as your operating range. **Setting the PWM frequency above 5 kHz (`5.0 kHz`) will generate excessive heat** on the control board and is not recommended.
+> **HEAT DISCLAIMER:** Use **500 Hz – 5 kHz (`0.5 – 5.0 kHz` in the app's `kHz` field)** as your recommended starting and operating range. Higher frequencies force the PWM IC to work harder and produce more heat—**setting the frequency above 5 kHz increases heat, and you must NEVER set it above 20 kHz (`20.0 kHz`)** due to a high risk of board overheating.
 
 #### How to Tune Your Fan Step-by-Step
 
@@ -94,7 +101,7 @@ Because **every fan model responds differently** to PWM signals, you should expe
 
 1. **Set a Starting Frequency:** Enter a value between **`0.5` and `5.0` kHz** (500 Hz – 5 kHz) in the **PWM frequency** box—for example, start at **`1.0` kHz** or **`2.0` kHz**—and tap **Apply**.
 2. **Test the Duty Cycle:** Slowly drag the **Fan duty cycle** slider from `0%` upward until the fan starts spinning smoothly. Note the minimum percentage your fan needs to start reliably (many fans require ~20%–40% to start).
-3. **Fine-Tune for Noise & Smoothness:** If you hear an annoying whine/hum or the fan stutters at low speeds, try adjusting the frequency in small steps within **`0.5 – 5.0` kHz** (always tapping **Apply**) until the fan runs smoothly and quietly.
+3. **Fine-Tune for Noise & Smoothness:** If you hear an annoying whine/hum or the fan stutters at low speeds, try adjusting the frequency in small steps within **`0.5 – 5.0` kHz** (always tapping **Apply**) until the fan runs smoothly and quietly. Do **not** exceed **20 kHz**.
 4. **Check Board Temperature:** After dialing in your settings, verify that **Board temperature** on the dashboard stays stable during sustained operation.
 
 ### 4. Lighting & Advanced RGB Controls
@@ -138,10 +145,16 @@ The banner **`Device lighting settings are not synced`** appears whenever you ed
 | **App shows "UI preview · no Bluetooth connection"** | App is not paired/connected to a board | Tap the **Rheinmetall RHV1** selector at the top to scan and connect via Bluetooth. |
 | **Cannot install the `.apk` file** | Android blocks sideloaded apps by default | Enable **Install unknown apps** for your browser or file manager in Android Settings, then open the `.apk` again. |
 | **Balanced / Fast / Boost voltage does not activate** | Charger or cable does not support USB PD (5–15V 3A) | Switch to a certified USB PD adapter and USB-C cable rated for **5–15V 3A**, then check **Input Voltage** on the dashboard. |
-| **Board gets unusually hot during fan operation** | PWM frequency set too high (> 5 kHz) or heavy load on wrong pad | Lower **PWM frequency** back into **0.5 – 5.0 kHz** and tap **Apply**. Confirm no Peltier or >1A load is connected to the Fan/PWM or RGB pads. |
+| **Board gets unusually hot during fan operation** | PWM frequency set too high (above 5 kHz, or especially > 20 kHz) or heavy load on wrong pad | Lower **PWM frequency** back into **0.5 – 5.0 kHz** and tap **Apply** (never exceed **20 kHz**). Confirm no Peltier or >1A load is connected to the Fan/PWM or RGB pads. |
+| **Fan stops working or smells burnt on Boost (15V)** | Fan rated 12V or lower was overvolted at 15V, damaging its driver IC | Disconnect power immediately. Replace with a fan whose voltage rating supports 15V, or keep output at **Fast (12V)** or lower for 12V fans. |
+| **Peltier overheats or fails on Boost (15V)** | Peltier series below 127 (lower voltage rating) or insufficient heatsink | Disconnect power immediately. Use a **127-series (`TEC1-127xx`) or higher** Peltier module with a proper heatsink and fan for 15V operation. |
 | **Fan whines, buzzes, or won't spin at low %** | Frequency mismatch or duty cycle below fan startup threshold | Test different frequencies within **0.5 – 5.0 kHz** (tap **Apply** after each change) and raise **Fan duty cycle** slightly until startup is smooth. |
 | **RGB LEDs do not light up or show wrong colors** | Wrong LED type (e.g., 12V 4-pin), reversed wiring, or wrong Active LEDs count | Confirm you are using a **5V 3-pin** addressable RGB LED (`5V`, `Data`, `GND`), verify solder joints, and match **Active LEDs** to your strip/ring. |
 | **RGB settings reset after unplugging power** | Settings were not saved to an onboard slot or startup slot not set | Select Slot **0**, **1**, or **2**, tap **Save**, then tap **Set startup slot** while connected. |
+
+## Disclaimer & Liability (DWYOR)
+
+All wiring, modifications, component selections, and use cases performed outside the recommendations and specifications stated in this guide are strictly **Do With Your Own Risk (DWYOR)**. Rheinmetall and the author accept **no responsibility or liability** for any damage to the control board, connected components, power adapters, or surrounding property resulting from incompatible hardware, improper wiring, or operation beyond recommended limits.
 
 ## License & Usage Terms
 
